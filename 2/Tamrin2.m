@@ -13,8 +13,10 @@ function Tamrin2(im)
 
     figure;
     
-    Gaussian(orig,9,3,'salt & pepper')
-    %Gaussian(orig,10,3,'gaussian')
+    Gaussian(orig,9,3,'salt & pepper');
+    
+    figure;
+    Gaussian(orig,10,3,'gaussian')
     
 end
 
@@ -111,7 +113,7 @@ function Gaussian(orig, sigma, size, noiseType)
     % Add noise to the grayscale image and display
     noisyImage = imnoise ( grayscale , noiseType );
     
-    subplot(2,2,1);
+    subplot(1,3,1);
     imshow ( noisyImage );
     
     % Gaussian filtering formula is:
@@ -146,10 +148,10 @@ function Gaussian(orig, sigma, size, noiseType)
     %new_image = noisyImage ./ kernel;
     new_image = conv_customized(noisyImage,kernel);
     
-    subplot(2,2,2);
+    subplot(1,3,3);
     imshow ((new_image .^2) .^0.5 , []);
     
-    subplot(2,2,3);
+    subplot(1,3,2);
     imshow(kernel);
     title('kernel');
 end
