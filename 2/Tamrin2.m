@@ -12,12 +12,13 @@ function Tamrin2(im)
     Sober(orig)
 
     figure;
-    
     Gaussian(orig,9,3,'salt & pepper');
     
     figure;
     Gaussian(orig,10,3,'gaussian')
     
+    figure;
+    Laplacian(orig)
 end
 
 function Sober(orig)
@@ -158,10 +159,24 @@ end
 
 
 
-% function [kernel] = CustomFSpecial(size)
-% 
-% end
-
+function Laplacian(orig)
+    kernel = [0 1 0;1 -4 1;0 1 0];
+    
+    grayscale = rgb2gray ( orig );
+    new_image = conv_customized(double(grayscale),kernel);
+    
+    subplot(2,2,1);
+    imshow(orig);
+    title('Original');
+    
+    subplot(2,2,2);
+    imshow(kernel);
+    title('kernel');
+    
+    subplot(2,2,3);
+    imshow ((new_image .^2) .^0.5 , []);
+    title('new image');
+end
 
 
 
