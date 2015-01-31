@@ -3,31 +3,44 @@
 
 % Main function to call different filters
 function Noise(im, noiseType)
-    %close all;
+    close all;
     
     KERNEL_SIZE = 3;
     
     % Read in the image and convert to gray
     orig = imread (im);
-    grayscale = rgb2gray ( orig );
+%     grayscale = rgb2gray ( orig );
     
     % Add noise to the grayscale image and display
-    noisyImage = imnoise ( grayscale , noiseType );
+    noisyImage = imnoise ( orig , noiseType );
     
-    ShowOriginalImage(noisyImage);
+    ShowImage(noisyImage,2,'Original image');
     
-    MeanFilter(noisyImage,KERNEL_SIZE);
+    newImage = noisyImage;
     
-    Gaussian(noisyImage,9,KERNEL_SIZE);
+    for i=1:3
+        newImage(:,:,i) = MeanFilter(noisyImage(:,:,i),KERNEL_SIZE);
+    end
+    ShowImage(newImage,4,'Mean filter applied');
     
-    MedianFilter(noisyImage);
+    for i=1:3
+        newImage(:,:,i) = Gaussian(noisyImage(:,:,i),9,KERNEL_SIZE);
+    end
+    ShowImage(newImage,5,'Gaussian filter applied');
+    
+    for i=1:3
+        newImage(:,:,i) = MedianFilter(noisyImage(:,:,i));
+    end
+    ShowImage(newImage,6,'Median filter applied');
+    
+%     MaxFilter(noisyImage);
     
 end
 
-function ShowOriginalImage(noisyImage)
-    subplot(2,3,2)
-    imshow(noisyImage);
-    title('Original image');
+function ShowImage(image,place,title2)
+    subplot(2,3,place)
+    imshow(image);
+    title(title2);
 end
 
 % Apply convolution operations
@@ -58,7 +71,7 @@ function [new_image] =  conv_customized(img, kernel)
 end
 
 
-function Gaussian(noisyImage, sigma, size)
+function denoisedImage = Gaussian(noisyImage, sigma, size)
     
     kernel = zeros(size);
     
@@ -70,29 +83,28 @@ function Gaussian(noisyImage, sigma, size)
         end
     end
     
-    new_image = conv_customized(noisyImage,kernel);
+    denoisedImage = conv_customized(noisyImage,kernel);
     
-    subplot(2,3,4);
-    imshow ((new_image .^2) .^0.5 , []);
-    title('Gaussian filter applied');
+%     subplot(2,3,4);
+%     imshow ((new_image .^2) .^0.5 , []);
+%     title('Gaussian filter applied');
 
 end
 
 
-function MeanFilter(noisyImage, size)
+function denoisedImage = MeanFilter(noisyImage, size)
 
     kernel = ones(size);
     kernel = kernel .* (1/(size^2));
     
     denoisedImage = conv_customized(noisyImage,kernel);
-    
-    subplot(2,3,5)
-    imshow((denoisedImage .^2) .^0.5 , []);
-    title('Mean filter applied');
+%     subplot(2,3,5)
+%     imshow((denoisedImage .^2) .^0.5 , []);
+%     title('Mean filter applied');
 end
 
 
-function MedianFilter(noisyImage)
+function denoisedImage = MedianFilter(noisyImage)
 
     denoisedImage = double(noisyImage);
     
@@ -103,8 +115,23 @@ function MedianFilter(noisyImage)
         end
     end
     
-    subplot(2,3,6)
-    imshow((denoisedImage .^2) .^0.5 , []);
-    title('Median filter applied');
+%     subplot(2,3,6)
+%     imshow((denoisedImage .^2) .^0.5 , []);
+%     title('Median filter applied');
 end
 
+
+function MaxFilter(noisyImage)
+
+    denoisedImage = double(noisyImage);
+    
+    for i=2:size(noisyImage,1)-1
+        for j=2:size(noisyImage,2)-1
+            denoisedImage(i,j) = max([noisyImage(i-1,j),noisyImage(i+1,j),noisyImage(i,j-1),noisyImage(i,j+1)]);
+        end
+    end
+    
+    subplot(3,3,7)
+    imshow((denoisedImage .^2) .^0.5 , []);
+    title('Max filter applied');
+end
